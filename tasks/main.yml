@@ -1,0 +1,7 @@
+---
+  
+- name: configure (and possibly create) system account for interacting with the database
+  include_tasks: user.yml
+
+- name: deploy query files
+  include_tasks: queries.yml

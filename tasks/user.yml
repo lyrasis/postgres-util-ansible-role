@@ -1,0 +1,29 @@
+---
+
+- block:
+  - name: add postgres-util system user group
+    group:
+      name:     "{{ postgres_util_system_group }}"
+      gid:      "{{ postgres_util_system_group_gid | default(omit) }}"
+      state:    present
+    become: true
+
+  - name: add postgres-util system user
+    user:
+      name:     "{{ postgres_util_system_user }}"
+      shell:    "/bin/bash"
+      uid:      "{{ postgres_util_system_user_uid  | default(omit) }}"
+      group:    "{{ postgres_util_system_group }}"
+      comment:  "{{ postgres_util_system_user }} system account"
+    become: true
+  when: postgres_util_create_system_user
+
+- name: add pgpass entry for source database
+  include_tasks: pgpass.yml
+  vars:
+    admin_user: "{{ postgres_util_system_user }}"
+    admin_group: "{{ postgres_util_system_group }}"
+    database: "{{ postgres_util_db_name }}"
+    user: "{{ postgres_util_db_user }}"
+    password: "{{ postgres_util_db_password }}"
+    state: "present"

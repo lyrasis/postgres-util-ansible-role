@@ -1,0 +1,10 @@
+---
+
+- name: deploy queries
+  copy:
+    src: "{{ item }}"
+    dest: "/home/{{ postgres_util_system_user }}"
+    owner: "{{ postgres_util_system_user }}"
+    group: "{{ postgres_util_system_group }}"
+    mode: '660'
+  with_items: "{{ postgres_util_query_files }}"
