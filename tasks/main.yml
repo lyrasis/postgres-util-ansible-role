@@ -1,4 +1,7 @@
 ---
+
+- name: make sure to become true
+  include: ensure_become.yml
   
 - name: configure (and possibly create) system account for interacting with the database
   include_tasks: user.yml
