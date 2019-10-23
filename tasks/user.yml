@@ -23,6 +23,7 @@
   vars:
     admin_user: "{{ postgres_util_system_user }}"
     admin_group: "{{ postgres_util_system_group }}"
+    host: "{{ postgres_util_db_host }}"
     database: "{{ postgres_util_db_name }}"
     user: "{{ postgres_util_db_user }}"
     password: "{{ postgres_util_db_password }}"
