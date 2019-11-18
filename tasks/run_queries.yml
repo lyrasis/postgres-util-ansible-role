@@ -1,0 +1,54 @@
+---
+# vars:
+#   admin_user: "postgres"
+#   admin_group: "{{ admin_user }}"
+#   [host: "{{ db_host }}"]
+#   database: "{{ db_name }}"
+#   user: "{{ db_user }}"
+#   [password: "{{ db_password }}"]
+#   query_files: "anonymize_db.sql.j2"
+#   [pgpass: false]
+- name: set pgpass var
+  set_fact:
+    pgpass: add_pgpass | default(false)
+
+- name: add pgpass entry for database
+  include_tasks: pgpass.yml
+  vars:
+    state: "present"
+  when: pgpass
+
+- name: repackage vars for run query task(s)
+  set_fact:
+    q_admin_user: "{{ admin_user }}"
+    q_admin_group: "{{ admin_group | default(admin_user) }}"
+    q_database: "{{ database }}"
+    q_user: "{{ user }}"
+- set_fact:
+    q_host: "{{ host }}"
+  when: host is defined
+- set_fact:
+    q_password: "{{ password }}"
+    q_pgpass: "{{ pgpass }}"
+  when: pgpass
+
+- name: run queries
+  include_tasks: run_query.yml
+  vars:
+    admin_user: "{{ q_admin_user }}"
+    admin_group: "{{ q_admin_group }}"
+    database: "{{ q_database }}"
+    user: "{{ q_user }}"
+    host: "{{ q_host | default(omit) }}"
+    q_password: "{{ q_password | default(omit) }}"
+    pgpass: "{{ q_pgpass }}"
+    query_file: "{{ query }}"
+  loop: "{{ query_files }}"
+  loop_control:
+    loop_var: query
+
+- name: remove pgpass entry for database
+  include_tasks: pgpass.yml
+  vars:
+    state: "absent"
+  when: pgpass
