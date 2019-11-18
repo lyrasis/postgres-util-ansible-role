@@ -8,5 +8,5 @@
     state: "{{ state }}"
     create: yes
     owner: "{{ admin_user }}"
-    group: "{{ admin_group }}"
+    group: "{{ admin_group | default(admin_user) }}"
     mode: "0600"
